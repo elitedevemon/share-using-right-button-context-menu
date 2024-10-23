@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share Page as Image via Email</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    #shareButton {
+      font-size: 18px;
+      background-color: lightblue;
+      padding: 10px;
+      cursor: pointer;
+      border: 1px solid #000;
+      display: inline-block;
+    }
+    #content {
+      padding: 20px;
+      background-color: lightgreen;
+      border: 1px solid #000;
+    }
+    #resultImage {
+      margin-top: 20px;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="content">
+    <h1>Welcome to My Website</h1>
+    <p>This is a sample content of the page that will be shared as a visual snapshot.</p>
+  </div>
+
+  <div id="shareButton">Share This Page via Email</div>
+  <br>
+  <img id="resultImage" alt="Generated view will appear here" style="max-width:100%; display: none;" />
+
+  <script>
+    document.getElementById('shareButton').addEventListener('click', function() {
+      // Convert the content area into a canvas image
+      html2canvas(document.body).then(canvas => {
+        // Convert the canvas to a base64 image format
+        const imageURL = canvas.toDataURL('image/png');
+
+        // Show the image on the page (optional)
+        const resultImage = document.getElementById('resultImage');
+        resultImage.src = imageURL;
+        resultImage.style.display = 'block';
+
+        // Convert base64 image data into a Blob
+        fetch(imageURL)
+          .then(res => res.blob())
+          .then(blob => {
+            // Convert the Blob to a File object for email attachment
+            const file = new File([blob], 'page-snapshot.png', { type: blob.type });
+
+            // Create a mailto link to open the default email client with the image as an attachment
+            const emailBody = encodeURIComponent("Please find the attached snapshot of the webpage.");
+            const emailSubject = encodeURIComponent("Snapshot of Webpage");
+            const emailAddress = "recipient@example.com";  // Set the recipient email address
+            const mailtoLink = `mailto:${emailAddress}?subject=${emailSubject}&body=${emailBody}`;
+
+            // Open the default email client with the mailto link
+            window.location.href = mailtoLink;
+          });
+      });
+    });
+  </script>
+
+</body>
+</html>

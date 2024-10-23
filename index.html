@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Right-Click Share Menu</title>
+  <style>
+    /* Style for the shareable area */
+    #shareArea {
+      width: 300px;
+      height: 200px;
+      background-color: lightblue;
+      text-align: center;
+      line-height: 200px;
+      border: 1px solid #000;
+      cursor: pointer;
+    }
+
+    /* Hidden by default */
+    #customMenu {
+      display: none;
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    #customMenu ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #customMenu ul li {
+      padding: 8px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    #customMenu ul li:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shareable area -->
+  <div id="shareArea">
+    Right-click to share this content
+  </div>
+
+  <!-- Custom context menu -->
+  <div id="customMenu">
+    <ul>
+      <li id="shareOption">Share this page</li>
+      <li>Option 2</li>
+      <li>Option 3</li>
+    </ul>
+  </div>
+
+  <script>
+    const shareArea = document.getElementById('shareArea');
+    const customMenu = document.getElementById('customMenu');
+    const shareOption = document.getElementById('shareOption');
+
+    // Function to handle the share functionality
+    function shareContent() {
+      const shareData = {
+        title: 'My Awesome Website',
+        text: 'Check out this amazing website!',
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        navigator.share(shareData)
+          .then(() => console.log('Content shared successfully!'))
+          .catch((error) => console.error('Error sharing content:', error));
+      } else {
+        alert('Sharing is not supported in this browser.');
+      }
+    }
+
+    // Show the custom context menu
+    function showContextMenu(event) {
+      event.preventDefault(); // Prevent default browser context menu
+
+      // Position the custom menu at the mouse cursor location
+      customMenu.style.left = `${event.pageX}px`;
+      customMenu.style.top = `${event.pageY}px`;
+      customMenu.style.display = 'block';
+    }
+
+    // Hide the custom context menu
+    function hideContextMenu() {
+      customMenu.style.display = 'none';
+    }
+
+    // Event listeners
+    shareArea.addEventListener('contextmenu', showContextMenu); // Show menu on right-click
+    document.addEventListener('click', hideContextMenu); // Hide menu on any other click
+
+    // Handle the share option in the custom context menu
+    shareOption.addEventListener('click', () => {
+      hideContextMenu(); // Hide the menu after clicking
+      shareContent(); // Trigger share
+    });
+
+    // Prevent the custom menu from closing when clicked inside it
+    customMenu.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+  </script>
+
+</body>
+</html>
